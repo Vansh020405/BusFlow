@@ -1,146 +1,101 @@
-import { useState, useMemo, useCallback } from 'react';
-import { Link } from 'react-router-dom';
-import BusMap from '../components/BusMap';
-import BusInfoPanel from '../components/BusInfoPanel';
-import BusCard from '../components/BusCard';
+import { useState, useMemo, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import TopHeader from '../components/TopHeader';
+import BottomNav from '../components/BottomNav';
 import StatusBar from '../components/StatusBar';
 import { useBusData } from '../hooks/useBus';
+import { STOP_COORDS, STOP_BUS_MAPPING, calculateETA } from '../data';
 
 export default function StudentDashboard() {
+  const navigate = useNavigate();
   const { buses, isLive } = useBusData();
-  const [selectedBus, setSelectedBus] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [student, setStudent] = useState(null);
 
-  const filteredBuses = useMemo(() => {
-    if (!searchQuery.trim()) return buses;
-    const q = searchQuery.toLowerCase();
-    return buses.filter(
-      (b) =>
-        b.number.toLowerCase().includes(q) ||
-        b.id.toLowerCase().includes(q) ||
-        (b.route && b.route.toLowerCase().includes(q))
-    );
-  }, [buses, searchQuery]);
+  useEffect(() => {
+    const data = localStorage.getItem('busflow_user');
+    if (!data) { navigate('/'); return; }
+    const parsed = JSON.parse(data);
+    if (parsed.role !== 'student') { navigate('/driver'); return; }
+    setStudent(parsed);
+  }, [navigate]);
 
-  const handleTrack = useCallback((bus) => {
-    setSelectedBus((prev) => (prev?.id === bus.id ? null : bus));
-  }, []);
+  const assignedBusId = useMemo(() => student ? STOP_BUS_MAPPING[student.stop] : null, [student]);
+  const liveBus = useMemo(() => buses.find(b => b.id === assignedBusId), [buses, assignedBusId]);
+  const stopInfo = useMemo(() => student ? STOP_COORDS[student.stop] : null, [student]);
 
-  // Update selected bus with live data
-  const liveBus = useMemo(() => {
-    if (!selectedBus) return null;
-    return buses.find((b) => b.id === selectedBus.id) || selectedBus;
-  }, [selectedBus, buses]);
+  const etaData = useMemo(() => {
+    if (!liveBus || !stopInfo || liveBus.status !== 'running') return null;
+    return calculateETA(liveBus.lat, liveBus.lng, stopInfo.lat, stopInfo.lng);
+  }, [liveBus, stopInfo]);
+
+  if (!student || !liveBus) return <div className="h-screen bg-[#0a0a0a] flex items-center justify-center animate-pulse"><span className="text-[10px] uppercase font-black text-zinc-800 tracking-[0.4em]">Initializing...</span></div>;
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] flex flex-col">
+    <div className="h-screen w-full bg-[#0a0a0a] flex flex-col overflow-hidden text-white">
       <StatusBar isLive={isLive} />
 
-      {/* ─── Header ─── */}
-      <header className="sticky top-0 z-30 bg-[#0a0a0f]/90 backdrop-blur-xl border-b border-zinc-800/40">
-        <div className="px-4 pt-4 pb-3">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2.5">
-              {/* Logo */}
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z" />
-                </svg>
+      {/* ─── Top Section ─── */}
+      <TopHeader name={student.name} />
+
+      <div className="flex-1 overflow-y-auto px-6 pb-40 custom-scrollbar mt-2">
+        
+        {/* ─── Main Bus Card ─── */}
+        <div className="mb-10 fade-up" style={{ animationDelay: '0.05s' }}>
+          <div className="premium-card p-10 flex flex-col items-center bg-[#121212]">
+            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 mb-6 opacity-60">Assigned Vehicle</span>
+            <h2 className="text-4xl font-black text-white uppercase tracking-tighter mb-10">{liveBus.number}</h2>
+            
+            <div className="w-full h-[0.5px] bg-zinc-800 opacity-30 mb-10" />
+            
+            <div className="flex flex-col items-center gap-1">
+              <div className="flex items-center gap-3">
+                <span className="text-7xl font-black text-white tracking-tighter shadow-sm leading-none">
+                  {etaData ? etaData.eta.split(' ')[0] : (liveBus.status === 'parked' ? '—' : '∞')}
+                </span>
+                <span className="text-lg font-black text-[#d4a017] mt-auto pb-1 uppercase tracking-widest leading-none">MIN</span>
               </div>
-              <div>
-                <h1 className="text-lg font-bold text-zinc-100 leading-tight">BusFlow</h1>
-                <div className="flex items-center gap-1.5">
-                  <div className={`w-1.5 h-1.5 rounded-full ${isLive ? 'bg-emerald-400 pulse-dot' : 'bg-amber-400'}`} />
-                  <span className="text-[10px] text-zinc-500 font-medium">
-                    {isLive ? 'Live' : 'Demo Mode'}
-                  </span>
-                </div>
-              </div>
+              <p className="mt-8 text-[11px] font-black uppercase tracking-[0.3em] text-[#9ca3af]">
+                Approaching {stopInfo.label}
+              </p>
             </div>
-
-            {/* Driver link */}
-            <Link
-              to="/driver"
-              className="text-xs font-medium text-zinc-400 hover:text-zinc-200 bg-zinc-800/50 hover:bg-zinc-800 px-3 py-1.5 rounded-lg transition-colors border border-zinc-700/30"
-            >
-              Driver Panel
-            </Link>
-          </div>
-
-          {/* Search */}
-          <div className="relative">
-            <svg
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500"
-              fill="none" stroke="currentColor" viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <input
-              type="text"
-              placeholder="Search bus number or route..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-zinc-800/50 border border-zinc-700/30 rounded-xl py-2.5 pl-10 pr-4 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-emerald-500/40 focus:ring-1 focus:ring-emerald-500/20 transition-all"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            )}
           </div>
         </div>
-      </header>
 
-      {/* ─── Map ─── */}
-      <BusMap selectedBus={liveBus} height="50vh" />
-
-      {/* ─── Bus Info Panel ─── */}
-      {liveBus && <BusInfoPanel bus={liveBus} />}
-
-      {/* ─── Bus List ─── */}
-      <div className="flex-1 px-4 pt-4 pb-8">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-semibold text-zinc-400">
-            {searchQuery ? `Results (${filteredBuses.length})` : 'All Buses'}
-          </h2>
-          <span className="text-[11px] text-zinc-600">
-            {buses.filter(b => b.status === 'running').length} running
-          </span>
+        {/* ─── Track Bus Horizontal Tile ─── */}
+        <div className="mb-7 fade-up" style={{ animationDelay: '0.1s' }}>
+          <button 
+            onClick={() => navigate('/track')}
+            className="premium-card w-full p-7 flex items-center justify-between border border-[#d4a017]/10 ring-1 ring-[#d4a017]/5 btn-active bg-[#121212]"
+          >
+            <div className="flex items-center gap-6">
+              <div className="w-14 h-14 bg-zinc-900/80 rounded-[20px] flex items-center justify-center text-3xl">🛰️</div>
+              <div className="flex flex-col text-left">
+                <h3 className="text-[13px] font-black uppercase tracking-[0.2em] text-[#d4a017] mb-1">Track Live Position</h3>
+                <p className="text-[10px] font-black uppercase tracking-widest text-[#9ca3af]">Real-time Satellite Feed</p>
+              </div>
+            </div>
+            <div className="text-zinc-700 text-xl font-bold pr-1">→</div>
+          </button>
         </div>
 
-        {filteredBuses.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-zinc-800/50 flex items-center justify-center">
-              <svg className="w-6 h-6 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
+        {/* ─── Driver Card ─── */}
+        <div className="fade-up" style={{ animationDelay: '0.15s' }}>
+          <div className="premium-card p-7 bg-[#121212] flex items-center justify-between">
+            <div className="flex items-center gap-5">
+              <div className="w-12 h-12 rounded-2xl bg-zinc-900/50 flex items-center justify-center text-xl">👤</div>
+              <div className="flex flex-col">
+                <span className="text-[9px] font-black uppercase tracking-[0.3em] text-[#9ca3af] mb-1">Assigned Driver</span>
+                <h3 className="text-sm font-black text-white uppercase tracking-tight mb-0.5">{liveBus.driver}</h3>
+                <p className="text-[10px] font-bold text-zinc-500 tracking-widest">{liveBus.contact}</p>
+              </div>
             </div>
-            <p className="text-zinc-500 text-sm">No buses found</p>
-            <p className="text-zinc-600 text-xs mt-1">Try a different search</p>
+            <a href={`tel:${liveBus.contact}`} className="w-10 h-10 rounded-full border border-zinc-800 flex items-center justify-center text-xs btn-active">📞</a>
           </div>
-        ) : (
-          <div className="flex flex-col gap-2">
-            {filteredBuses.map((bus) => (
-              <BusCard
-                key={bus.id}
-                bus={bus}
-                isSelected={liveBus?.id === bus.id}
-                onTrack={handleTrack}
-              />
-            ))}
-          </div>
-        )}
+        </div>
+
       </div>
 
-      {/* Bottom safe area */}
-      <div className="h-6" />
+      <BottomNav />
     </div>
   );
 }

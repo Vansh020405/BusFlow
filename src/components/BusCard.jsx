@@ -4,65 +4,45 @@ export default function BusCard({ bus, isSelected, onTrack }) {
   const statusColor = getStatusColor(bus.status);
 
   return (
-    <button
-      onClick={() => onTrack(bus)}
+    <div
       className={`
-        w-full text-left rounded-2xl p-3.5 transition-all duration-200
-        ${isSelected
-          ? 'glass-card glow-green border-emerald-500/30'
-          : 'bg-zinc-900/60 border border-zinc-800/40 hover:bg-zinc-800/60 hover:border-zinc-700/40 active:scale-[0.98]'
-        }
+        w-full rounded-2xl p-4 transition-all duration-300 premium-card mb-3
+        ${isSelected ? 'border-amber-500/20 ring-1 ring-amber-500/20' : ''}
       `}
     >
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3 min-w-0">
-          {/* Bus icon */}
-          <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-            style={{ backgroundColor: `${statusColor}15` }}
-          >
-            <svg className="w-5 h-5" style={{ color: statusColor }} fill="currentColor" viewBox="0 0 24 24">
-              <path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z" />
-            </svg>
-          </div>
-
+      <div className="flex items-center justify-between gap-4">
+        {/* Left: Info */}
+        <div className="flex items-center gap-4 min-w-0">
+          <div 
+            className="w-1.5 h-1.5 rounded-full shrink-0" 
+            style={{ backgroundColor: statusColor, boxShadow: `0 0 8px ${statusColor}` }}
+          />
           <div className="min-w-0">
-            <p className="text-sm font-semibold text-zinc-100 truncate">{bus.number}</p>
-            {bus.route && (
-              <p className="text-[11px] text-zinc-500 truncate mt-0.5">{bus.route}</p>
-            )}
+            <p className="text-base font-bold text-white tracking-tight">{bus.number}</p>
+            <p className="text-xs text-zinc-500 truncate mt-0.5 font-medium tracking-wide flex items-center gap-2">
+              <span style={{ color: statusColor }}>{getStatusLabel(bus.status)}</span>
+              {bus.route && <span>• {bus.route}</span>}
+            </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
-          {/* Status badge */}
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full"
-            style={{ backgroundColor: `${statusColor}12` }}
-          >
-            <div
-              className={`w-1.5 h-1.5 rounded-full ${bus.status === 'running' ? 'pulse-dot' : ''}`}
-              style={{ backgroundColor: statusColor }}
-            />
-            <span className="text-[11px] font-medium" style={{ color: statusColor }}>
-              {getStatusLabel(bus.status)}
-            </span>
-          </div>
-
-          {/* Track arrow */}
-          {!isSelected && (
-            <svg className="w-4 h-4 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          )}
-          {isSelected && (
-            <div className="w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center">
-              <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-          )}
-        </div>
+        {/* Right: Action */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onTrack(bus);
+          }}
+          className={`
+            btn-active shrink-0 px-5 py-2 rounded-xl text-xs font-bold tracking-wider uppercase transition-all
+            ${isSelected 
+              ? 'bg-zinc-800 text-zinc-400 cursor-default' 
+              : 'bg-[#d4a017] text-black shadow-[0_4px_15px_-3px_rgba(212,160,23,0.3)] hover:bg-[#c89b00]'
+            }
+          `}
+        >
+          {isSelected ? 'Tracking' : 'Track'}
+        </button>
       </div>
-    </button>
+    </div>
   );
 }

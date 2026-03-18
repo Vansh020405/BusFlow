@@ -1,23 +1,39 @@
-// Dummy bus data — used before Firebase is connected
+// Dummy bus data
 export const DUMMY_BUSES = [
-  { id: 'bus_1', number: 'KA-01-1234', route: 'Campus → Station', lat: 12.9716, lng: 77.5946, status: 'running', lastUpdated: Date.now() },
-  { id: 'bus_2', number: 'KA-01-5678', route: 'Campus → Mall', lat: 12.9756, lng: 77.5906, status: 'running', lastUpdated: Date.now() },
-  { id: 'bus_3', number: 'KA-01-9012', route: 'Hostel → Campus', lat: 12.9696, lng: 77.5986, status: 'parked', lastUpdated: Date.now() },
-  { id: 'bus_4', number: 'KA-01-3456', route: 'Campus → Airport', lat: 12.9776, lng: 77.5866, status: 'offline', lastUpdated: Date.now() },
-  { id: 'bus_5', number: 'KA-01-7890', route: 'Campus → City Center', lat: 12.9736, lng: 77.5926, status: 'running', lastUpdated: Date.now() },
-  { id: 'bus_6', number: 'KA-01-2345', route: 'Library → Hostel', lat: 12.9686, lng: 77.6006, status: 'parked', lastUpdated: Date.now() },
-  { id: 'bus_7', number: 'KA-01-6789', route: 'Campus → Bus Stand', lat: 12.9746, lng: 77.5876, status: 'running', lastUpdated: Date.now() },
-  { id: 'bus_8', number: 'KA-01-0123', route: 'Gate 2 → Lab Block', lat: 12.9706, lng: 77.5956, status: 'offline', lastUpdated: Date.now() },
+  { id: 'bus_1', number: 'KA-01-1234', route: 'Campus → Station', lat: 12.9716, lng: 77.5946, status: 'running', driver: 'Rahul S.', contact: '+91 98765-43210' },
+  { id: 'bus_2', number: 'KA-01-5678', route: 'Campus → Mall', lat: 12.9756, lng: 77.5906, status: 'running', driver: 'Amit K.', contact: '+91 87654-32109' },
+  { id: 'bus_3', number: 'KA-01-9012', route: 'Hostel → Campus', lat: 12.9696, lng: 77.5986, status: 'parked', driver: 'Sandeep V.', contact: '+91 76543-21098' },
+  { id: 'bus_4', number: 'KA-01-3456', route: 'Campus → Airport', lat: 12.9776, lng: 77.5866, status: 'offline', driver: 'Vikram J.', contact: '+91 65432-10987' },
 ];
+
+export const STOP_COORDS = {
+  gate_1: { label: 'Gate 1', lat: 12.9730, lng: 77.5930 },
+  hostel: { label: 'Hostel', lat: 12.9700, lng: 77.5990 },
+  library: { label: 'Library', lat: 12.9740, lng: 77.5910 },
+  block_a: { label: 'Block A', lat: 12.9710, lng: 77.5950 },
+};
+
+export const PARKING_ZONES = [
+  { id: 'zone_a', label: 'Block A Parking', lat: 12.9710, lng: 77.5950, radius: 0.0005 },
+  { id: 'zone_b', label: 'Parking Lot 1', lat: 12.9690, lng: 77.5980, radius: 0.0005 },
+  { id: 'zone_c', label: 'Gate Area', lat: 12.9725, lng: 77.5935, radius: 0.0005 },
+];
+
+export const STOP_BUS_MAPPING = {
+  gate_1: 'bus_1',
+  hostel: 'bus_2',
+  library: 'bus_3',
+  block_a: 'bus_4',
+};
 
 export const BUS_IDS = DUMMY_BUSES.map(b => b.id);
 
 export function getStatusColor(status) {
   switch (status) {
     case 'running': return '#22c55e';
-    case 'parked': return '#f59e0b';
-    case 'offline': return '#ef4444';
-    default: return '#71717a';
+    case 'parked': return '#d4a017';
+    case 'offline': return '#6b7280';
+    default: return '#3f3f46';
   }
 }
 
