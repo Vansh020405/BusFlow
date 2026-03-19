@@ -32,11 +32,11 @@
   }
 
   .premium-input {
-    @apply w-full bg-[#121212] border border-[#2a2a2a] rounded-[16px] py-4 px-5 text-sm font-medium text-white placeholder-zinc-600 focus:outline-none focus:border-[#d4a017] transition-all;
+    @apply w-full bg-[#121212] border border-[#2a2a2a] rounded-[20px] py-4 px-5 text-sm font-medium text-white placeholder-zinc-600 focus:outline-none focus:border-[#d4a017] transition-all;
   }
 
   .glass-pill {
-    @apply bg-[#121212] border border-white/[0.03] backdrop-blur-xl;
+    @apply bg-[#121212] border border-white/[0.03] backdrop-blur-xl rounded-[20px];
   }
 
   .btn-active {

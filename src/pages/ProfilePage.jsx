@@ -52,14 +52,14 @@ export default function ProfilePage() {
         {/* Avatar Section */}
         <div className="flex flex-col items-center mt-6 mb-12 fade-up">
            <div className="relative">
-              <div className="w-32 h-32 rounded-full border-2 border-[#d4a017]/20 p-1 mb-6">
+              <div className="w-32 h-32 rounded-[20px] border-2 border-[#d4a017]/20 p-1 mb-6 house-glow">
                 <img 
                   src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}`} 
-                  className="w-full h-full rounded-full bg-zinc-900 border border-white/5 shadow-2xl"
+                  className="w-full h-full rounded-[18px] bg-zinc-900 border border-white/5 shadow-2xl"
                   alt="Avatar"
                 />
               </div>
-              <div className="absolute bottom-6 right-0 w-8 h-8 bg-emerald-500 rounded-full border-4 border-[#0a0a0a] flex items-center justify-center shadow-lg">
+              <div className="absolute bottom-6 right-0 w-8 h-8 bg-emerald-500 rounded-[10px] border-4 border-[#0a0a0a] flex items-center justify-center shadow-lg">
                 <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
               </div>
            </div>
@@ -70,7 +70,7 @@ export default function ProfilePage() {
         {/* Info Grid */}
         <div className="grid grid-cols-2 gap-4 mb-8 fade-up" style={{ animationDelay: '0.1s' }}>
            <div className="premium-card p-6 border border-white/[0.03] flex flex-col gap-4">
-              <div className="w-10 h-10 rounded-xl bg-zinc-900 flex items-center justify-center border border-white/5">
+              <div className="w-10 h-10 rounded-[20px] bg-zinc-900 flex items-center justify-center border border-white/5">
                 <Bus size={18} className="text-[#d4a017]" />
               </div>
               <div>
@@ -80,7 +80,7 @@ export default function ProfilePage() {
            </div>
            
            <div className="premium-card p-6 border border-white/[0.03] flex flex-col gap-4">
-              <div className="w-10 h-10 rounded-xl bg-zinc-900 flex items-center justify-center border border-white/5">
+              <div className="w-10 h-10 rounded-[20px] bg-zinc-900 flex items-center justify-center border border-white/5">
                 <Shield size={18} className="text-[#d4a017]" />
               </div>
               <div>

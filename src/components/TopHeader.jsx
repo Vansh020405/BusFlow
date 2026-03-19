@@ -4,10 +4,10 @@ export default function TopHeader({ name }) {
   return (
     <div className="flex items-center justify-between px-6 py-8 fade-up">
       <div className="flex items-center gap-5">
-        <div className="w-11 h-11 rounded-14 border-[0.5px] border-zinc-800 p-0.5">
+        <div className="w-11 h-11 rounded-[20px] border-[0.5px] border-zinc-800 p-0.5">
           <img 
             src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`} 
-            className="w-full h-full rounded-full bg-zinc-900"
+            className="w-full h-full rounded-[20px] bg-zinc-900"
             alt="Profile"
           />
         </div>
@@ -27,7 +27,7 @@ export default function TopHeader({ name }) {
 
 function HeaderButton({ Icon }) {
   return (
-    <button className="w-9 h-9 rounded-full bg-zinc-900/50 flex items-center justify-center btn-active border border-white/[0.03]">
+    <button className="w-9 h-9 rounded-[20px] bg-zinc-900/50 flex items-center justify-center btn-active border border-white/[0.03]">
       <Icon size={14} strokeWidth={2.5} className="text-zinc-500" />
     </button>
   );

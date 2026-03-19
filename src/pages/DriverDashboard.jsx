@@ -127,7 +127,7 @@ export default function DriverDashboard() {
     return (
       <div className="h-screen w-full bg-[#0a0a0a] flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-10 h-10 border-2 border-[#d4a017] border-t-transparent rounded-full animate-spin" />
+          <div className="w-10 h-10 border-2 border-[#d4a017] border-t-transparent rounded-[20px] animate-spin" />
           <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-600">Loading Dashboard...</p>
         </div>
       </div>
@@ -142,8 +142,8 @@ export default function DriverDashboard() {
       {/* ─── Header ─── */}
       <div className="shrink-0 px-5 py-4 flex items-center justify-between bg-[#0a0a0a] border-b border-white/[0.03] z-50">
         <div className="flex items-center gap-3">
-          <Link to="/profile" className="w-10 h-10 rounded-full border border-white/10 p-0.5">
-            <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${driver.name}`} className="w-full h-full rounded-full bg-zinc-900" alt="P" />
+          <Link to="/profile" className="w-10 h-10 rounded-[20px] border border-white/10 p-0.5">
+            <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${driver.name}`} className="w-full h-full rounded-[8px] bg-zinc-900" alt="P" />
           </Link>
           <div>
             <h1 className="text-sm font-bold tracking-tight text-white/90">Driver Dashboard</h1>
@@ -153,13 +153,13 @@ export default function DriverDashboard() {
         <div className="flex items-center gap-3">
           <button 
             onClick={toggleTripMode}
-            className={`px-3 py-1.5 rounded-xl border text-[9px] font-black uppercase tracking-widest transition-all
+            className={`px-3 py-1.5 rounded-[20px] border text-[9px] font-black uppercase tracking-widest transition-all
               ${tripMode === 'arrival' ? 'bg-[#d4a017]/5 border-[#d4a017]/20 text-[#d4a017]' : 'bg-white/5 border-white/10 text-white'}`}
           >
             {tripMode === 'arrival' ? 'To Univ' : 'From Univ'}
           </button>
-          <div className={`px-3 py-1.5 rounded-full border text-[9px] font-bold uppercase tracking-wider flex items-center gap-2 ${isTracking ? 'bg-[#d4a017]/10 border-[#d4a017]/30 text-[#d4a017]' : 'bg-zinc-900/50 border-zinc-800 text-zinc-500'}`}>
-            <div className={`w-1.5 h-1.5 rounded-full ${isTracking ? 'bg-[#d4a017]' : 'bg-zinc-700'}`} />
+          <div className={`px-3 py-1.5 rounded-[20px] border text-[9px] font-bold uppercase tracking-wider flex items-center gap-2 ${isTracking ? 'bg-[#d4a017]/10 border-[#d4a017]/30 text-[#d4a017]' : 'bg-zinc-900/50 border-zinc-800 text-zinc-500'}`}>
+            <div className={`w-1.5 h-1.5 rounded-[20px] ${isTracking ? 'bg-[#d4a017]' : 'bg-zinc-700'}`} />
             {isTracking ? 'Live' : 'Standby'}
           </div>
         </div>
@@ -179,8 +179,8 @@ export default function DriverDashboard() {
 
         {/* Navigation Stats Overlay */}
         <div className="absolute bottom-4 left-4 right-4 z-10 pointer-events-none">
-          <div className="bg-[#121212]/90 backdrop-blur-xl rounded-2xl border border-white/5 p-4 flex items-center gap-4 pointer-events-auto">
-            <div className="w-10 h-10 rounded-xl bg-[#d4a017]/10 flex items-center justify-center border border-[#d4a017]/20 shrink-0">
+          <div className="bg-[#121212]/90 backdrop-blur-xl rounded-[20px] border border-white/5 p-4 flex items-center gap-4 pointer-events-auto">
+            <div className="w-10 h-10 rounded-[20px] bg-[#d4a017]/10 flex items-center justify-center border border-[#d4a017]/20 shrink-0">
               <Navigation size={18} className="text-[#d4a017]" />
             </div>
             <div className="flex items-center gap-6 flex-1">
@@ -212,7 +212,7 @@ export default function DriverDashboard() {
             <select
               value={selectedRoute}
               onChange={handleRouteChange}
-              className="w-full bg-[#111] border border-[#222] rounded-2xl py-3.5 pl-4 pr-10 text-xs font-bold text-zinc-300 appearance-none focus:outline-none focus:border-[#d4a017]/50 transition-all cursor-pointer"
+              className="w-full bg-[#111] border border-[#222] rounded-[20px] py-3.5 pl-4 pr-10 text-xs font-bold text-zinc-300 appearance-none focus:outline-none focus:border-[#d4a017]/50 transition-all cursor-pointer"
             >
               <option value="">Select Route</option>
               {Object.keys(activeRoutes).sort((a,b)=>a.localeCompare(b, undefined, {numeric:true})).map(route => (
@@ -226,7 +226,7 @@ export default function DriverDashboard() {
             <select
               value={selectedStop}
               onChange={(e) => setSelectedStop(e.target.value)}
-              className="w-full bg-[#111] border border-[#222] rounded-2xl py-3.5 pl-4 pr-10 text-xs font-bold text-zinc-300 appearance-none focus:outline-none focus:border-[#d4a017]/50 transition-all cursor-pointer"
+              className="w-full bg-[#111] border border-[#222] rounded-[20px] py-3.5 pl-4 pr-10 text-xs font-bold text-zinc-300 appearance-none focus:outline-none focus:border-[#d4a017]/50 transition-all cursor-pointer"
             >
               <option value="">Select Stop</option>
               {stops.map((stop, idx) => (
@@ -239,14 +239,14 @@ export default function DriverDashboard() {
 
         {/* Tracking Status & Errors */}
         {isTracking && !position && (
-          <div className="bg-[#d4a017]/5 border border-[#d4a017]/10 p-4 rounded-2xl animate-pulse flex items-center gap-3">
-            <div className="w-2 h-2 bg-[#d4a017] rounded-full animate-ping" />
+          <div className="bg-[#d4a017]/5 border border-[#d4a017]/10 p-4 rounded-[20px] animate-pulse flex items-center gap-3">
+            <div className="w-2 h-2 bg-[#d4a017] rounded-[20px] animate-ping" />
             <p className="text-[10px] font-bold text-[#d4a017] uppercase tracking-widest">Waiting for GPS Fix...</p>
           </div>
         )}
         
         {error && (
-          <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-2xl flex items-center gap-3">
+          <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-[20px] flex items-center gap-3">
              <AlertCircle className="text-red-500 shrink-0" size={18} />
              <p className="text-[10px] text-red-500 font-bold uppercase tracking-wider leading-relaxed">
                {error}
@@ -257,10 +257,10 @@ export default function DriverDashboard() {
         {/* Action Buttons */}
         <div className="flex flex-col gap-3">
           {/* Recording Mode Console */}
-          <div className="bg-[#1a1a1a] border border-white/[0.03] rounded-2xl p-4 mb-1">
+          <div className="bg-[#1a1a1a] border border-white/[0.03] rounded-[20px] p-4 mb-1">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <div className={`w-2 h-2 rounded-full ${isRecording ? 'bg-red-500 animate-pulse' : 'bg-zinc-600'}`} />
+                <div className={`w-2 h-2 rounded-[20px] ${isRecording ? 'bg-red-500 animate-pulse' : 'bg-zinc-600'}`} />
                 <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Route Training Mode</p>
               </div>
               {isRecording && (
@@ -277,7 +277,7 @@ export default function DriverDashboard() {
                     startRecording();
                   }
                 }}
-                className="w-full py-3 rounded-xl border border-white/5 bg-white/5 flex items-center justify-center gap-2 hover:bg-white/10 transition-all group"
+                className="w-full py-3 rounded-[20px] border border-white/5 bg-white/5 flex items-center justify-center gap-2 hover:bg-white/10 transition-all group"
               >
                 <Disc size={14} className="text-zinc-500 group-hover:text-red-500 transition-colors" />
                 <span className="text-[9px] font-black uppercase tracking-widest text-zinc-400 group-hover:text-white transition-colors">Start Path Recording</span>
@@ -288,7 +288,7 @@ export default function DriverDashboard() {
                   stopRecording();
                   triggerToast('Route Path Saved Successfully');
                 }}
-                className="w-full py-3 rounded-xl border border-red-500/20 bg-red-500/10 flex items-center justify-center gap-2 animate-pulse"
+                className="w-full py-3 rounded-[20px] border border-red-500/20 bg-red-500/10 flex items-center justify-center gap-2 animate-pulse"
               >
                 <Disc size={14} className="text-red-500" />
                 <span className="text-[9px] font-black uppercase tracking-widest text-red-500">Stop & Save Permanent Route</span>
@@ -301,7 +301,7 @@ export default function DriverDashboard() {
                 console.log("🚀 Start Journey button clicked by user.");
                 startTracking(driver);
               }}
-              className="w-full bg-[#d4a017] py-4 rounded-2xl flex items-center justify-center gap-3 active:scale-[0.98] transition-transform shadow-lg shadow-[#d4a017]/10"
+              className="w-full bg-[#d4a017] py-4 rounded-[20px] flex items-center justify-center gap-3 active:scale-[0.98] transition-transform shadow-lg shadow-[#d4a017]/10"
             >
               <Play size={20} fill="black" className="text-black" />
               <span className="text-[11px] font-extrabold text-black uppercase tracking-[0.2em]">Start Journey</span>
@@ -310,13 +310,13 @@ export default function DriverDashboard() {
             <>
               {position && (
                 <div className="flex items-center gap-2 mb-1 px-1">
-                   <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
+                   <div className="w-1.5 h-1.5 bg-emerald-500 rounded-[20px]" />
                    <p className="text-[9px] font-black text-emerald-500 uppercase tracking-widest">Location Found & Tracking Active</p>
                 </div>
               )}
               <button
                 onClick={handleMarkStop}
-                className="w-full bg-[#d4a017] py-4 rounded-2xl flex items-center justify-center gap-3 active:scale-[0.98] transition-transform shadow-lg shadow-[#d4a017]/10"
+                className="w-full bg-[#d4a017] py-4 rounded-[20px] flex items-center justify-center gap-3 active:scale-[0.98] transition-transform shadow-lg shadow-[#d4a017]/10"
               >
                 <CheckCircle2 size={20} className="text-black" />
                 <span className="text-[11px] font-extrabold text-black uppercase tracking-[0.2em]">Mark Stop</span>
@@ -326,14 +326,14 @@ export default function DriverDashboard() {
                 {!isFinalized && routeStops.length >= 2 && (
                   <button
                     onClick={finalizeRoute}
-                    className="flex-1 py-3.5 border border-[#d4a017]/20 bg-[#d4a017]/5 rounded-2xl text-[10px] font-bold uppercase tracking-widest text-[#d4a017] hover:bg-[#d4a017]/10 transition-all"
+                    className="flex-1 py-3.5 border border-[#d4a017]/20 bg-[#d4a017]/5 rounded-[20px] text-[10px] font-bold uppercase tracking-widest text-[#d4a017] hover:bg-[#d4a017]/10 transition-all"
                   >
                     Finalize Route
                   </button>
                 )}
                 <button
                   onClick={stopTracking}
-                  className="flex-1 py-3.5 bg-zinc-900/50 border border-red-500/20 rounded-2xl flex items-center justify-center gap-2 hover:bg-red-500/10 transition-all"
+                  className="flex-1 py-3.5 bg-zinc-900/50 border border-red-500/20 rounded-[20px] flex items-center justify-center gap-2 hover:bg-red-500/10 transition-all"
                 >
                   <Square size={14} className="text-red-500" />
                   <span className="text-[10px] font-bold uppercase text-red-500 tracking-widest">finish joureny</span>
@@ -353,14 +353,14 @@ export default function DriverDashboard() {
               {routeStops.map((stop, idx) => (
                 <div
                   key={`cleared-${stop.order}-${idx}`}
-                  className="flex items-center justify-between bg-[#111] border border-[#1e1e1e] rounded-2xl px-4 py-3 group hover:border-[#d4a017]/20 transition-all"
+                  className="flex items-center justify-between bg-[#111] border border-[#1e1e1e] rounded-[20px] px-4 py-3 group hover:border-[#d4a017]/20 transition-all"
                 >
                   <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <div className="w-7 h-7 rounded-lg bg-[#d4a017]/10 flex items-center justify-center shrink-0 border border-[#d4a017]/20">
+                    <div className="w-7 h-7 rounded-[20px] bg-[#d4a017]/10 flex items-center justify-center shrink-0 border border-[#d4a017]/20">
                       <span className="text-[10px] font-extrabold text-[#d4a017]">{stop.order}</span>
                     </div>
                     <div className="min-w-0">
-                      <p className="text-xs font-bold text-white truncate">{stop.name}</p>
+                      <p className="text-xs font-bold text-white">{stop.name}</p>
                       <p className="text-[9px] text-zinc-600 flex items-center gap-1 mt-0.5">
                         <Clock size={8} />
                         {stop.timestamp ? new Date(stop.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '--'}
@@ -373,7 +373,7 @@ export default function DriverDashboard() {
                         deleteStop(stop.order);
                         triggerToast(`${stop.name} removed`);
                       }}
-                      className="ml-2 w-8 h-8 rounded-lg flex items-center justify-center text-red-500/60 hover:text-red-500 hover:bg-red-500/10 active:bg-red-500/20 transition-all shrink-0"
+                      className="ml-2 w-8 h-8 rounded-[20px] flex items-center justify-center text-red-500/60 hover:text-red-500 hover:bg-red-500/10 active:bg-red-500/20 transition-all shrink-0"
                     >
                       <Trash2 size={14} />
                     </button>
@@ -389,13 +389,13 @@ export default function DriverDashboard() {
       {showToast && (
         <div className="fixed inset-0 z-[1000] flex items-center justify-center pointer-events-none">
           <div
-            className={`pointer-events-auto px-8 py-5 rounded-2xl border shadow-2xl flex flex-col items-center gap-3 animate-toast-pop backdrop-blur-xl ${
+            className={`pointer-events-auto px-8 py-5 rounded-[20px] border shadow-2xl flex flex-col items-center gap-3 animate-toast-pop backdrop-blur-xl ${
               showToast.isError
                 ? 'bg-red-500/90 border-red-400/30 shadow-red-500/20'
                 : 'bg-[#1a1a1a]/95 border-white/10 shadow-black/40'
             }`}
           >
-            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+            <div className={`w-10 h-10 rounded-[20px] flex items-center justify-center ${
               showToast.isError ? 'bg-white/20' : 'bg-[#d4a017]/15 border border-[#d4a017]/20'
             }`}>
               {showToast.isError ? <AlertCircle size={20} className="text-white" /> : <CheckCircle2 size={20} className="text-[#d4a017]" />}

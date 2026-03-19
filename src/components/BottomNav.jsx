@@ -26,7 +26,7 @@ export default function BottomNav() {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 px-6 pb-2 pt-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/50 to-transparent pointer-events-none">
-      <div className="glass-pill h-16 rounded-[24px] px-8 flex items-center justify-between border border-white/[0.05] pointer-events-auto">
+      <div className="glass-pill h-16 rounded-[20px] px-8 flex items-center justify-between border border-white/[0.05] pointer-events-auto">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path;
           const { Icon } = item;
