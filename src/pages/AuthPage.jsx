@@ -152,7 +152,7 @@ export default function AuthPage() {
         
         {/* Header Section */}
         <div className="mb-10 text-center fade-up">
-          <h1 className="text-4xl font-black tracking-tighter text-white uppercase italic">
+          <h1 className="text-4xl font-black tracking-tighter text-white uppercase">
             {isLogin ? 'Welcome back' : step === 1 ? 'New Access' : 'Intel Sync'}
           </h1>
           <p className="text-[#9ca3af] text-[10px] uppercase font-bold tracking-[0.4em] mt-3">

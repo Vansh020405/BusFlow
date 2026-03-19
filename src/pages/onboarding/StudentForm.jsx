@@ -108,8 +108,8 @@ export default function StudentForm() {
         {step === 1 ? (
           <div className="fade-up">
             <div className="mb-10 text-center">
-              <h1 className="text-4xl font-extrabold tracking-tight mb-3 italic">STUDENT ACCESS</h1>
-              <p className="text-zinc-500 text-sm italic">Locate your campus network node</p>
+              <h1 className="text-4xl font-extrabold tracking-tight mb-3">STUDENT ACCESS</h1>
+              <p className="text-zinc-500 text-sm">Locate your campus network node</p>
             </div>
 
             <div className="grid gap-4 mt-8">
@@ -167,8 +167,8 @@ export default function StudentForm() {
             </button>
 
             <div className="mb-8">
-              <h2 className="text-3xl font-black italic tracking-tighter uppercase">Transit Intel</h2>
-              <p className="text-zinc-500 text-sm mt-2 italic">Connect to your primary fleet stream</p>
+              <h2 className="text-3xl font-black tracking-tighter uppercase">Transit Intel</h2>
+              <p className="text-zinc-500 text-sm mt-2">Connect to your primary fleet stream</p>
             </div>
 
             <form onSubmit={handleSubmit} className="bg-[#111] border border-[#222] rounded-[32px] p-8 space-y-4">

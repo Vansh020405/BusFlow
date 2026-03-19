@@ -151,13 +151,6 @@ export default function DriverDashboard() {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <button 
-            onClick={toggleTripMode}
-            className={`px-3 py-1.5 rounded-[20px] border text-[9px] font-black uppercase tracking-widest transition-all
-              ${tripMode === 'arrival' ? 'bg-[#d4a017]/5 border-[#d4a017]/20 text-[#d4a017]' : 'bg-white/5 border-white/10 text-white'}`}
-          >
-            {tripMode === 'arrival' ? 'To Univ' : 'From Univ'}
-          </button>
           <div className={`px-3 py-1.5 rounded-[20px] border text-[9px] font-bold uppercase tracking-wider flex items-center gap-2 ${isTracking ? 'bg-[#d4a017]/10 border-[#d4a017]/30 text-[#d4a017]' : 'bg-zinc-900/50 border-zinc-800 text-zinc-500'}`}>
             <div className={`w-1.5 h-1.5 rounded-[20px] ${isTracking ? 'bg-[#d4a017]' : 'bg-zinc-700'}`} />
             {isTracking ? 'Live' : 'Standby'}
@@ -296,16 +289,25 @@ export default function DriverDashboard() {
             )}
           </div>
           {!isTracking ? (
-            <button
-              onClick={() => {
-                console.log("🚀 Start Journey button clicked by user.");
-                startTracking(driver);
-              }}
-              className="w-full bg-[#d4a017] py-4 rounded-[20px] flex items-center justify-center gap-3 active:scale-[0.98] transition-transform shadow-lg shadow-[#d4a017]/10"
-            >
-              <Play size={20} fill="black" className="text-black" />
-              <span className="text-[11px] font-extrabold text-black uppercase tracking-[0.2em]">Start Journey</span>
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={toggleTripMode}
+                className={`px-4 py-4 rounded-[20px] border text-[10px] font-black uppercase tracking-widest transition-all min-w-[100px]
+                  ${tripMode === 'arrival' ? 'bg-[#d4a017]/5 border-[#d4a017]/20 text-[#d4a017]' : 'bg-white/5 border-white/10 text-white'}`}
+              >
+                {tripMode === 'arrival' ? 'To Univ' : 'From Univ'}
+              </button>
+              <button
+                onClick={() => {
+                  console.log("🚀 Start Journey button clicked by user.");
+                  startTracking(driver);
+                }}
+                className="flex-1 bg-[#d4a017] py-4 rounded-[20px] flex items-center justify-center gap-3 active:scale-[0.98] transition-transform shadow-lg shadow-[#d4a017]/10"
+              >
+                <Play size={20} fill="black" className="text-black" />
+                <span className="text-[11px] font-extrabold text-black uppercase tracking-[0.2em]">Start Journey</span>
+              </button>
+            </div>
           ) : (
             <>
               {position && (

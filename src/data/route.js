@@ -143,7 +143,15 @@ const routes_part_10 = {
   route_125: ["Shahbad Bus Stand", "Mohra", "CU (Pb)"]
 };
 
-export const PUNJAB_ROUTES = {
+const addHomeStop = (routes) => {
+  const updated = {};
+  Object.keys(routes).forEach(id => {
+    updated[id] = ["Home", ...routes[id]];
+  });
+  return updated;
+};
+
+export const PUNJAB_ROUTES = addHomeStop({
   ...routes_part_1,
   ...routes_part_2,
   ...routes_part_3,
@@ -154,11 +162,11 @@ export const PUNJAB_ROUTES = {
   ...routes_part_8,
   ...routes_part_9,
   ...routes_part_10
-};
+});
 
-export const BADDI_ROUTES = {
+export const BADDI_ROUTES = addHomeStop({
   route_b1: ["Baddi Bus Stand", "Baddi Barrier", "CU (Baddi)"],
   route_b2: ["Nalagarh", "Pinjore", "CU (Baddi)"]
-};
+});
 
 export const MASTER_ROUTES = PUNJAB_ROUTES; // For backward compatibility

@@ -77,7 +77,7 @@ export default function StudentDashboard() {
             <div className="flex justify-between items-center">
               <div className="flex flex-col">
                 <span className="text-[7px] font-black text-zinc-600 uppercase tracking-[0.2em] mb-0.5">Fleet Identity</span>
-                <h3 className="text-2xl font-black text-white italic tabular-nums leading-none">
+                <h3 className="text-2xl font-black text-white tabular-nums leading-none">
                    BUS {assignedBus?.number?.split(' ').pop() || student.busId.split('_')[1]}
                 </h3>
               </div>
@@ -92,14 +92,14 @@ export default function StudentDashboard() {
             <div className="grid grid-cols-3 gap-2">
                <div className="bg-[#111112] border border-white/[0.03] rounded-[20px] p-2 flex flex-col items-center justify-center gap-2 min-h-[60px] shadow-inner shadow-black/50">
                   <span className="text-[7px] font-black text-zinc-600 uppercase tracking-[0.2em] leading-none">Est Arrival</span>
-                  <span className="text-sm font-black text-[#d4a017] uppercase tracking-tighter italic whitespace-nowrap">
+                  <span className="text-sm font-black text-[#d4a017] uppercase tracking-tighter whitespace-nowrap">
                      {eta ? eta.eta : (assignedBus?.status === 'running' ? 'Live' : 'Parked')}
                   </span>
                </div>
                
                <div className="bg-[#111112] border border-white/[0.03] rounded-[20px] p-2 flex flex-col items-center justify-center gap-2 shadow-inner shadow-black/50">
                   <span className="text-[7px] font-black text-zinc-600 uppercase tracking-[0.2em] leading-none">Progression</span>
-                  <span className="text-sm font-black text-white tabular-nums tracking-tighter italic">{Math.round(progressPercentage)}%</span>
+                  <span className="text-sm font-black text-white tabular-nums tracking-tighter">{Math.round(progressPercentage)}%</span>
                </div>
 
                <div className="bg-[#111112] border border-white/[0.03] rounded-[20px] p-2 flex flex-col items-center justify-center gap-2 shadow-inner shadow-black/50">
@@ -117,7 +117,7 @@ export default function StudentDashboard() {
                </div>
                <div className="flex flex-col gap-0.5">
                   <span className="text-[8px] font-black text-zinc-600 uppercase tracking-widest leading-none">MY ASSIGNED STOP</span>
-                  <span className="text-sm font-black text-white uppercase tracking-tight italic">{student.stopName}</span>
+                  <span className="text-sm font-black text-white uppercase tracking-tight">{student.stopName}</span>
                </div>
             </div>
 
