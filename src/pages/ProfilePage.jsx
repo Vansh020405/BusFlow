@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, LogOut, User, Shield, Bus, MapPin, Mail, Settings, Bell, HelpCircle } from 'lucide-react';
 import StatusBar from '../components/StatusBar';
+import profileBg from '../assets/profile_bg.png';
 
 export default function ProfilePage() {
   const navigate = useNavigate();
@@ -21,7 +22,15 @@ export default function ProfilePage() {
   if (!user) return null;
 
   return (
-    <div className="h-screen bg-[#0a0a0a] text-white flex flex-col overflow-hidden relative font-['Inter']">
+    <div 
+      className="h-screen bg-black text-white flex flex-col overflow-hidden relative font-['Inter']"
+      style={{
+        backgroundImage: `url(${profileBg})`,
+        backgroundSize: '100% auto',
+        backgroundPosition: 'top center',
+        backgroundRepeat: 'no-repeat'
+      }}
+    >
       <StatusBar />
 
       {/* Header */}
@@ -33,8 +42,8 @@ export default function ProfilePage() {
           <ChevronLeft size={20} className="text-zinc-500" />
         </button>
         <div className="flex flex-col items-center">
-          <h1 className="text-lg font-black uppercase tracking-tighter leading-none mb-1">Fleet Identity</h1>
-          <p className="text-[9px] font-black uppercase tracking-[0.3em] text-[#d4a017]">Network Profile</p>
+          <h1 className="text-lg font-black uppercase tracking-tighter leading-none mb-1">PROFILE</h1>
+          <p className="text-[9px] font-black uppercase tracking-[0.3em] text-[#d4a017]">View Your Details</p>
         </div>
         <div className="w-12" />
       </div>
@@ -54,7 +63,7 @@ export default function ProfilePage() {
                 <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
               </div>
            </div>
-           <h2 className="text-2xl font-black uppercase tracking-tighter italic mb-1">{user.name}</h2>
+           <h2 className="text-2xl font-black uppercase tracking-tighter  mb-1">{user.name}</h2>
            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-600">{user.role === 'driver' ? 'Operator' : 'Student'} Profile</p>
         </div>
 
@@ -65,7 +74,7 @@ export default function ProfilePage() {
                 <Bus size={18} className="text-[#d4a017]" />
               </div>
               <div>
-                <p className="text-[9px] font-black text-zinc-700 uppercase tracking-widest mb-1.5">Assignment</p>
+                <p className="text-[9px] font-black text-zinc-700 uppercase tracking-widest mb-1.5">ROute Number</p>
                 <p className="text-xs font-black uppercase text-white tracking-tight">{user.busId?.replace('_', ' ').toUpperCase() || user.bus?.replace('_', ' ').toUpperCase()}</p>
               </div>
            </div>
@@ -75,7 +84,7 @@ export default function ProfilePage() {
                 <Shield size={18} className="text-[#d4a017]" />
               </div>
               <div>
-                <p className="text-[9px] font-black text-zinc-700 uppercase tracking-widest mb-1.5">Network ID</p>
+                <p className="text-[9px] font-black text-zinc-700 uppercase tracking-widest mb-1.5">ROLL NUMBER</p>
                 <p className="text-xs font-black uppercase text-white tracking-tight">{user.roll || 'Verified'}</p>
               </div>
            </div>
@@ -103,14 +112,14 @@ export default function ProfilePage() {
              className="w-full mt-4 premium-card p-5 flex items-center gap-4 border border-red-500/10 bg-red-500/5 btn-active group"
            >
               <LogOut size={18} className="text-red-500" />
-              <span className="text-[11px] font-black uppercase tracking-widest text-red-500">De-Authorize Session</span>
+              <span className="text-[11px] font-black uppercase tracking-widest text-red-500">LOG OUT</span>
            </button>
         </div>
       </div>
 
       {/* Footer Branding */}
       <div className="p-10 flex flex-col items-center opacity-20 pointer-events-none">
-         <h3 className="text-sm font-black italic tracking-tighter uppercase mb-2">BusFlow Core</h3>
+         <h3 className="text-sm font-black tracking-tighter uppercase mb-2">BusFlow Core</h3>
          <p className="text-[7px] font-black uppercase tracking-[0.5em]">System Version 0.0.1 (Experimental)</p>
       </div>
     </div>

@@ -7,6 +7,6 @@ export const calculateETA = (busLat, busLng, destLat, destLng) => {
   const a = Math.sin(dLat / 2) ** 2 + Math.cos((busLat * Math.PI) / 180) * Math.cos((destLat * Math.PI) / 180) * Math.sin(dLng / 2) ** 2;
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   const dist = R * c;
-  const etaMin = Math.round((dist / 25) * 60);
+  const etaMin = Math.round((dist / 35) * 60);
   return { distance: dist.toFixed(1), eta: etaMin < 1 ? '< 1 min' : `${etaMin} min` };
 };

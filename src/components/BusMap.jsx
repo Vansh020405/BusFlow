@@ -1,151 +1,193 @@
-import { useState, useCallback, memo, useEffect, useRef, useMemo } from 'react';
-import { GoogleMap, useJsApiLoader, Polyline } from '@react-google-maps/api';
-import AdvancedMarker from './AdvancedMarker';
+import { memo, useEffect, useMemo, useState, useRef } from 'react';
+import { MapContainer, TileLayer, Marker, Polyline, useMap } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import polyline from '@mapbox/polyline';
+import { calculateETA } from '../data';
 
-const mapContainerStyle = { width: '100%', height: '100%' };
-const defaultCenter = { lat: 30.7333, lng: 76.7794 }; // Chandigarh
-const collegeCoords = { lat: 30.7673, lng: 76.5744 }; // CU (Pb)
+function MapController({ busPos, destPos, userLocation }) {
+  const map = useMap();
+  useEffect(() => {
+    if (!map) return;
+    const points = [];
+    if (busPos) points.push([busPos.lat, busPos.lng]);
+    if (destPos) points.push([destPos.lat, destPos.lng]);
+    if (userLocation) points.push([userLocation.lat, userLocation.lng]);
+    if (points.length >= 2) {
+      const bounds = L.latLngBounds(points);
+      map.fitBounds(bounds, { padding: [50, 50] });
+    } else if (points.length === 1) {
+      map.setView(points[0], 15);
+    }
+  }, [map, busPos, destPos, userLocation]);
+  return null;
+}
 
-// FIX: Declare libraries as a static constant outside the component 
-// to prevent unintentional re-loads (Performance Warning fix)
-const LIBRARIES = ['marker'];
+const createBusIcon = () => L.divIcon({
+  className: 'custom-bus-marker',
+  html: `<div style="display: flex; align-items: center; justify-content: center; position: relative;">
+           <div style="width: 24px; height: 24px; background: #d4a017; border-radius: 50%; border: 3px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.15);"></div>
+         </div>`,
+  iconSize: [24, 24],
+  iconAnchor: [12, 12]
+});
 
-const darkMapStyle = [
-  { elementType: 'geometry', stylers: [{ color: '#0d0d0d' }] },
-  { elementType: 'labels.icon', stylers: [{ visibility: 'off' }] },
-  { elementType: 'labels.text.fill', stylers: [{ color: '#555555' }] },
-  { elementType: 'labels.text.stroke', stylers: [{ color: '#0d0d0d' }] },
-  { featureType: 'administrative', elementType: 'geometry', stylers: [{ color: '#1a1a1a' }] },
-  { featureType: 'poi', elementType: 'labels', stylers: [{ visibility: 'off' }] },
-  { featureType: 'road', elementType: 'geometry.fill', stylers: [{ color: '#1a1a1a' }] },
-  { featureType: 'road', elementType: 'labels.text.fill', stylers: [{ color: '#333333' }] },
-  { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#000000' }] }
-];
+const createDestIcon = () => L.divIcon({
+  className: 'custom-dest-marker',
+  html: `<div style="width: 24px; height: 24px; background: #ef4444; border: 3px solid white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);">
+           <div style="width: 6px; height: 6px; background: white; border-radius: 50%;"></div>
+         </div>`,
+  iconSize: [24, 24],
+  iconAnchor: [12, 12]
+});
 
-function BusMap({ selectedBus, selectedStop, routeStops = [], height = '100%', showRoute = false }) {
-  const { isLoaded } = useJsApiLoader({
-    id: 'google-map-script',
-    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_KEY || '',
-    libraries: LIBRARIES // Using the static constant here
-  });
+const createUserIcon = () => L.divIcon({
+  className: 'custom-user-marker',
+  html: `<div style="position: relative; display: flex; align-items: center; justify-content: center;">
+           <div style="position: absolute; width: 40px; height: 40px; background: rgba(59, 130, 246, 0.15); border-radius: 50%; animation: pulse 2s infinite;"></div>
+           <div style="width: 16px; height: 16px; background: #3b82f6; border: 2.5px solid white; border-radius: 50%; z-index: 10; box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);"></div>
+         </div>`,
+  iconSize: [40, 40],
+  iconAnchor: [20, 20]
+});
 
-  const mapRef = useRef(null);
+const createStopIcon = (number) => L.divIcon({
+  className: 'custom-stop-marker',
+  html: `<div style="width: 20px; height: 20px; background: #3b82f6; border: 2px solid white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 9px; font-weight: 900; box-shadow: 0 4px 8px rgba(59, 130, 246, 0.2);">
+           ${number}
+         </div>`,
+  iconSize: [20, 20],
+  iconAnchor: [10, 10]
+});
 
-  const onLoad = useCallback((map) => {
-    mapRef.current = map;
-  }, []);
+const defaultCenter = [30.5162, 76.6597];
+
+function BusMap({ selectedBus, destination, onRouteUpdate, height = '100%', routeStops = [], userLocation = null, isTracking = false, recordedPath = [] }) {
+  const [roadPath, setRoadPath] = useState([]);
+  const lastFetchedPos = useRef(null);
+  const routeThrottleRef = useRef(null);
 
   const busPos = useMemo(() => {
-    if (selectedBus?.lat && selectedBus?.lng) {
-      return { lat: Number(selectedBus.lat), lng: Number(selectedBus.lng) };
-    }
+    if (selectedBus?.lat && selectedBus?.lng) return { lat: Number(selectedBus.lat), lng: Number(selectedBus.lng) };
     return null;
   }, [selectedBus]);
 
-  const polylinePath = useMemo(() => {
-    let paths = [];
-    if (routeStops.length > 0) {
-      paths = routeStops.map(s => ({ lat: Number(s.lat), lng: Number(s.lng) }));
-    }
-    if (busPos) {
-      if (paths.length > 0) {
-        paths = [busPos, ...paths];
-      } else if (showRoute) {
-        paths = [busPos, collegeCoords];
+  const destPos = useMemo(() => {
+    if (!destination || typeof destination === 'string') return null;
+    return { lat: Number(destination.lat), lng: Number(destination.lng) };
+  }, [destination]);
+
+  const getSimpleDist = (p1, p2) => {
+    if (!p1 || !p2) return 999;
+    return Math.sqrt(Math.pow(p1.lat - p2.lat, 2) + Math.pow(p1.lng - p2.lng, 2));
+  };
+
+  const fetchRoadRoute = async () => {
+    // If we have a recorded path, we don't need the API
+    if (recordedPath && recordedPath.length > 0) return;
+    
+    if (!busPos || !destPos || !isTracking) return;
+
+    if (lastFetchedPos.current && getSimpleDist(busPos, lastFetchedPos.current) < 0.0003) return;
+
+    try {
+      const apiKey = import.meta.env.VITE_OPENROUTE_SERVICE_KEY || 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjUxZDZlNjM2ZjI5ODQ1MjE5ZTY1YzBhMzk2MzgyMTlkIiwiaCI6Im11cm11cjY0In0=';
+      
+      console.log('🛰️ Fetching Road Geometry...');
+      const response = await fetch('https://api.openrouteservice.org/v2/directions/driving-car', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          'Authorization': apiKey
+        },
+        body: JSON.stringify({
+          coordinates: [[busPos.lng, busPos.lat], [destPos.lng, destPos.lat]]
+        })
+      });
+
+      if (!response.ok) throw new Error(`ORS API Status: ${response.status}`);
+      
+      const data = await response.json();
+      if (!data.routes || data.routes.length === 0) return;
+
+      const encodedGeometry = data.routes[0].geometry;
+      if (!encodedGeometry) return;
+
+      const decodedCoords = polyline.decode(encodedGeometry);
+      if (decodedCoords.length >= 2) {
+        setRoadPath(decodedCoords);
+        lastFetchedPos.current = busPos;
       }
+    } catch (e) {
+      console.error('❌ ORS Geometry Decoding Failed:', e.message);
     }
-    return paths;
-  }, [routeStops, busPos, showRoute]);
+  };
 
   useEffect(() => {
-    if (mapRef.current && busPos) {
-      mapRef.current.panTo(busPos);
+    // If recording, we don't call the API
+    if (recordedPath && recordedPath.length > 0) {
+      setRoadPath(recordedPath.map(p => [p.lat, p.lng]));
+      return;
     }
-  }, [busPos]);
 
-  const mapOptions = useMemo(() => ({
-    styles: darkMapStyle,
-    disableDefaultUI: true,
-    zoomControl: false,
-    gestureHandling: 'greedy',
-    clickableIcons: false,
-    mapId: 'bf_premium_dark_map' 
-  }), []);
+    if (!isTracking) {
+      setRoadPath([]);
+      return;
+    }
+    if (routeThrottleRef.current) clearTimeout(routeThrottleRef.current);
+    routeThrottleRef.current = setTimeout(fetchRoadRoute, 2000);
+    return () => clearTimeout(routeThrottleRef.current);
+  }, [busPos, destPos, isTracking, recordedPath]);
 
-  if (!isLoaded) {
-    return (
-      <div className="flex items-center justify-center bg-[#0a0a0a]" style={{ height }}>
-        <div className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-900 animate-pulse">
-           Optimizing Vector Stream...
-        </div>
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (busPos && destPos && onRouteUpdate) {
+      const stats = calculateETA(busPos.lat, busPos.lng, destPos.lat, destPos.lng);
+      if (stats) onRouteUpdate({ distance: `${stats.distance} km`, duration: stats.eta });
+    }
+  }, [busPos, destPos, onRouteUpdate]);
 
   return (
-    <div style={{ height }}>
-      <GoogleMap
-        mapContainerStyle={mapContainerStyle}
-        center={busPos || defaultCenter}
-        zoom={14}
-        onLoad={onLoad}
-        options={mapOptions}
+    <div style={{ height, background: '#ffffff', width: '100%', position: 'relative', zIndex: 0 }}>
+      <MapContainer
+        center={defaultCenter}
+        zoom={13}
+        zoomControl={true}
+        dragging={true}
+        scrollWheelZoom={true}
+        touchZoom={true}
+        style={{ height: '100%', width: '100%', zIndex: 1 }}
       >
-        {busPos && (
-          <AdvancedMarker position={busPos} title="Bus Location">
-            <div className="relative flex items-center justify-center">
-              {/* Pulse effect */}
-              <div className="absolute w-6 h-6 bg-[#d4a017] rounded-full animate-ping opacity-20" />
-              {/* Solid center dot */}
-              <div className="w-3.5 h-3.5 bg-[#d4a017] rounded-full border border-white/20 shadow-lg" />
-            </div>
-          </AdvancedMarker>
-        )}
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; OpenStreetMap'
+        />
+        
+        <MapController busPos={busPos} destPos={destPos} userLocation={userLocation} />
 
-        {selectedStop && (
-          <AdvancedMarker 
-            position={{ lat: Number(selectedStop.lat), lng: Number(selectedStop.lng) }}
-            title="Selected Stop"
-          >
-            <div className="w-4 h-4 bg-white rounded-full flex items-center justify-center shadow-lg border-2 border-zinc-950">
-              <div className="w-1.5 h-1.5 bg-zinc-900 rounded-full" />
-            </div>
-          </AdvancedMarker>
-        )}
-
-        {routeStops.map((stop, idx) => (
-          <AdvancedMarker
-            key={`stop-${idx}-${stop.lat}-${stop.lng}`}
-            position={{ lat: Number(stop.lat), lng: Number(stop.lng) }}
-            title={`Stop ${idx + 1}`}
-          >
-            <div className="relative group">
-              <div className="w-5 h-5 bg-white border-2 border-[#d4a017] rounded-full shadow-md flex items-center justify-center font-black text-black text-[9px] transition-transform duration-200 group-hover:scale-110">
-                {idx + 1}
-              </div>
-            </div>
-          </AdvancedMarker>
-        ))}
-
-
-        {polylinePath.length > 1 && (
-          <Polyline
-            path={polylinePath}
-            options={{
-              strokeColor: '#d4a017',
-              strokeOpacity: 0,
-              strokeWeight: 2,
-              icons: [
-                {
-                  icon: { path: 'M 0,-1 0,1', strokeOpacity: 0.4, scale: 2, strokeColor: '#d4a017' },
-                  offset: '0',
-                  repeat: '20px'
-                }
-              ]
+        {isTracking && roadPath.length >= 2 && (
+          <Polyline 
+            positions={roadPath} 
+            pathOptions={{
+               color: "#d4a017",
+               weight: 5,
+               opacity: 0.8,
+               lineJoin: 'round'
             }}
           />
         )}
-      </GoogleMap>
+
+        {busPos && <Marker position={[busPos.lat, busPos.lng]} icon={createBusIcon()} />}
+        {destPos && <Marker position={[destPos.lat, destPos.lng]} icon={createDestIcon()} />}
+        {userLocation && <Marker position={[userLocation.lat, userLocation.lng]} icon={createUserIcon()} />}
+
+        {routeStops.map((stop, idx) => (
+          <Marker 
+            key={`stop-${idx}`}
+            position={[Number(stop.lat), Number(stop.lng)]} 
+            icon={createStopIcon(idx + 1)} 
+          />
+        ))}
+      </MapContainer>
     </div>
   );
 }

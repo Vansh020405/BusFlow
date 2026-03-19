@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GraduationCap, Bus } from 'lucide-react';
 import RoleCard from '../../components/onboarding/RoleCard';
+import profileBg from '../../assets/profile_bg.png';
 
 export default function RoleSelection() {
   const navigate = useNavigate();
@@ -16,7 +17,15 @@ export default function RoleSelection() {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center p-6 bg-[radial-gradient(circle_at_center,_#121212_0%,_#0a0a0a_100%)]">
+    <div 
+      className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center p-6"
+      style={{
+        backgroundImage: `url(${profileBg})`,
+        backgroundSize: '100% auto',
+        backgroundPosition: 'top center',
+        backgroundRepeat: 'no-repeat'
+      }}
+    >
       <div className="text-center mb-16 fade-up">
         <h1 className="text-5xl font-black text-[#d4a017] tracking-[0.4em] uppercase mb-4 drop-shadow-2xl tracking-tighter">
           BusFlow
