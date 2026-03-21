@@ -17,7 +17,9 @@ export function useBusData() {
             id,
             number: val.number || val.busNumber || `Bus ${id.split('_')[1]}`,
             route: val.route || {},
-            route_finalized: val.route_finalized || false,
+            tripMode: val.tripMode || 'arrival',
+            route_finalized_arrival: val.route_finalized_arrival || false,
+            route_finalized_return: val.route_finalized_return || false,
             lat: val.lat || 0,
             lng: val.lng || 0,
             status: val.status || 'offline',
@@ -67,23 +69,32 @@ export function useBusLive(busId) {
   return data;
 }
 
-export function useBusRoutePath(busId) {
+export function useBusRoutePath(busId, tripMode = 'arrival') {
   const [path, setPath] = useState([]);
 
   useEffect(() => {
     if (!busId) return;
-    const pathRef = ref(db, `routes/${busId}/path`);
+    // Try specifically for the trip mode
+    const pathRef = ref(db, `routes/${busId}/${tripMode}/path`);
+    const legacyRef = ref(db, `routes/${busId}/path`);
+    
+    // First try mode-specific path
     const unsubscribe = onValue(pathRef, (snapshot) => {
       const val = snapshot.val();
       if (val) {
         setPath(Object.values(val));
       } else {
-        setPath([]);
+          // Fallback to legacy path if mode-specific is missing
+          onValue(legacyRef, (legacySnap) => {
+            const legVal = legacySnap.val();
+            if (legVal) setPath(Object.values(legVal));
+            else setPath([]);
+          }, { onlyOnce: true });
       }
     });
 
     return () => unsubscribe();
-  }, [busId]);
+  }, [busId, tripMode]);
 
   return path;
 }

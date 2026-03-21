@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import AuthPage from './pages/AuthPage';
 import StudentDashboard from './pages/StudentDashboard';
 import DriverDashboard from './pages/DriverDashboard';
+import DriverLivePage from './pages/DriverLivePage';
 import ProfilePage from './pages/ProfilePage';
 import LiveTrackingPage from './pages/LiveTrackingPage';
 import FindBusPage from './pages/FindBusPage';
@@ -76,6 +77,7 @@ export default function App() {
           {/* Active Session Routes */}
           <Route path="/student-dash" element={<ProtectedRoute role="student"><StudentDashboard /></ProtectedRoute>} />
           <Route path="/driver" element={<ProtectedRoute role="driver"><DriverDashboard /></ProtectedRoute>} />
+          <Route path="/driver/live" element={<ProtectedRoute role="driver"><DriverLivePage /></ProtectedRoute>} />
           
           <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
           <Route path="/track" element={<ProtectedRoute><LiveTrackingPage /></ProtectedRoute>} />
